@@ -1,0 +1,38 @@
+---
+- hosts: cisco
+  gather_facts: no
+  connection: local
+ 
+#  vars_prompt:
+#  - name: "mgmt_username"
+#    prompt: "Username"
+#    private: no
+#  - name: "mgmt_password"
+#    prompt: "Password"
+
+  tasks:
+
+  - name: SYS | Define provider
+    set_fact:
+      provider:
+        host: "{{ inventory_hostname }}" 
+        username: "popoludniewsieci"
+        password: "vxjCrmju72W9"
+
+  - name: IOS | Get Interface Fa8 interface
+    ios_command:
+      provider: "{{ provider }}"
+      commands:
+        - sh int desc | inc Fa8
+    register: interface
+
+  - debug: msg="{{ interface.stdout }}"
+
+  - name: IOS | Interface settings
+    ios_config:
+      lines:
+        - description IT Professional Network Camp
+      parents: interface FastEthernet8
+      provider: "{{ provider }}"
+
+
